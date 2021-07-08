@@ -62,9 +62,9 @@ var resourceGitLabProjectSchema = map[string]*schema.Schema{
 				return true
 			}
 
-			// For non-empty repositories GitLab automatically sets master as the
+			// For non-empty repositories GitLab automatically sets main as the
 			// default branch. If the project resource doesn't specify default_branch
-			// attribute, Terraform will force "master" => "" on the next run. This
+			// attribute, Terraform will force "main" => "" on the next run. This
 			// check makes Terraform ignore default branch value until it is set in
 			// .tf configuration. For schema.TypeString empty is equal to "".
 			if new == "" {

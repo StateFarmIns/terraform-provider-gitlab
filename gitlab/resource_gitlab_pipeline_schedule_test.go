@@ -27,7 +27,7 @@ func TestAccGitlabPipelineSchedule_basic(t *testing.T) {
 					testAccCheckGitlabPipelineScheduleExists("gitlab_pipeline_schedule.schedule", &schedule),
 					testAccCheckGitlabPipelineScheduleAttributes(&schedule, &testAccGitlabPipelineScheduleExpectedAttributes{
 						Description:  "Pipeline Schedule",
-						Ref:          "master",
+						Ref:          "main",
 						Cron:         "0 1 * * *",
 						CronTimezone: "UTC",
 						Active:       true,
@@ -41,7 +41,7 @@ func TestAccGitlabPipelineSchedule_basic(t *testing.T) {
 					testAccCheckGitlabPipelineScheduleExists("gitlab_pipeline_schedule.schedule", &schedule),
 					testAccCheckGitlabPipelineScheduleAttributes(&schedule, &testAccGitlabPipelineScheduleExpectedAttributes{
 						Description:  "Schedule",
-						Ref:          "master",
+						Ref:          "main",
 						Cron:         "0 4 * * *",
 						CronTimezone: "UTC",
 						Active:       false,
@@ -55,7 +55,7 @@ func TestAccGitlabPipelineSchedule_basic(t *testing.T) {
 					testAccCheckGitlabPipelineScheduleExists("gitlab_pipeline_schedule.schedule", &schedule),
 					testAccCheckGitlabPipelineScheduleAttributes(&schedule, &testAccGitlabPipelineScheduleExpectedAttributes{
 						Description:  "Pipeline Schedule",
-						Ref:          "master",
+						Ref:          "main",
 						Cron:         "0 1 * * *",
 						CronTimezone: "UTC",
 						Active:       true,
@@ -207,7 +207,7 @@ resource "gitlab_project" "foo" {
 resource "gitlab_pipeline_schedule" "schedule" {
 	project = "${gitlab_project.foo.id}"
 	description = "Pipeline Schedule"
-	ref = "master"
+	ref = "main"
 	cron = "0 1 * * *"
 }
 	`, rInt)
@@ -227,7 +227,7 @@ resource "gitlab_project" "foo" {
 resource "gitlab_pipeline_schedule" "schedule" {
   project = "${gitlab_project.foo.id}"
   description = "Schedule"
-  ref = "master"
+  ref = "main"
   cron = "0 4 * * *"
   active = false
 }

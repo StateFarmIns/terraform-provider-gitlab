@@ -10,7 +10,7 @@ documentation](https://docs.gitlab.com/ce/user/project/pipelines/schedules.html)
 resource "gitlab_pipeline_schedule" "example" {
    project     = "12345"
    description = "Used to schedule builds"
-   ref         = "master"
+   ref         = "main"
    cron        = "0 1 * * *"
 }
 ```

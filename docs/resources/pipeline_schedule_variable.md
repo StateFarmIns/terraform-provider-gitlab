@@ -8,7 +8,7 @@ This resource allows you to create and manage variables for pipeline schedules.
 resource "gitlab_pipeline_schedule" "example" {
    project     = "12345"
    description = "Used to schedule builds"
-   ref         = "master"
+   ref         = "main"
    cron        = "0 1 * * *"
 }
 

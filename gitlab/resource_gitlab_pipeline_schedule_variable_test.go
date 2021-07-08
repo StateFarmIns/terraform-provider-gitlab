@@ -112,7 +112,7 @@ resource "gitlab_project" "foo" {
 resource "gitlab_pipeline_schedule" "schedule" {
 	project = "${gitlab_project.foo.id}"
 	description = "Pipeline Schedule"
-	ref = "master"
+	ref = "main"
 	cron = "0 1 * * *"
 }
 
@@ -139,7 +139,7 @@ resource "gitlab_project" "foo" {
 resource "gitlab_pipeline_schedule" "schedule" {
 	project = "${gitlab_project.foo.id}"
 	description = "Pipeline Schedule"
-	ref = "master"
+	ref = "main"
 	cron = "0 1 * * *"
 }
 

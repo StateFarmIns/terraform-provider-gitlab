@@ -47,7 +47,7 @@ func TestAccGitlabProject_basic(t *testing.T) {
 	}
 
 	defaultsMasterBranch = defaults
-	defaultsMasterBranch.DefaultBranch = "master"
+	defaultsMasterBranch.DefaultBranch = "main"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -100,8 +100,8 @@ func TestAccGitlabProject_basic(t *testing.T) {
 			// Update the project creating the default branch
 			{
 				// Get the ID from the project data at the previous step
-				SkipFunc: testAccGitlabProjectConfigDefaultBranchSkipFunc(&received, "master"),
-				Config:   testAccGitlabProjectConfigDefaultBranch(rInt, "master"),
+				SkipFunc: testAccGitlabProjectConfigDefaultBranchSkipFunc(&received, "main"),
+				Config:   testAccGitlabProjectConfigDefaultBranch(rInt, "main"),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckGitlabProjectExists("gitlab_project.foo", &received),
 					testAccCheckAggregateGitlabProject(&defaultsMasterBranch, &received),
@@ -198,7 +198,7 @@ max_file_size = 1234
 			// NOTE: The push rules will still exist upstream because the push_rules block is computed.
 			{
 				SkipFunc: isRunningInCE,
-				Config:   testAccGitlabProjectConfigDefaultBranch(rInt, "master"),
+				Config:   testAccGitlabProjectConfigDefaultBranch(rInt, "main"),
 				Check: testAccCheckGitlabProjectPushRules("gitlab_project.foo", &gitlab.ProjectPushRules{
 					AuthorEmailRegex: "foo_author",
 				}),
@@ -213,7 +213,7 @@ max_file_size = 1234
 			},
 			// Destroy the project so we can next test creating a project with push rules simultaneously
 			{
-				Config:  testAccGitlabProjectConfigDefaultBranch(rInt, "master"),
+				Config:  testAccGitlabProjectConfigDefaultBranch(rInt, "main"),
 				Destroy: true,
 				Check:   testAccCheckGitlabProjectDestroy,
 			},
@@ -241,14 +241,14 @@ max_file_size = 123
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckGitlabProjectExists("gitlab_project.template-name", &received),
 					testAccCheckGitlabProjectDefaultBranch(&received, &testAccGitlabProjectExpectedAttributes{
-						DefaultBranch: "master",
+						DefaultBranch: "main",
 					}),
 					func(state *terraform.State) error {
 						client := testAccProvider.Meta().(*gitlab.Client)
 
 						projectID := state.RootModule().Resources["gitlab_project.template-name"].Primary.ID
 
-						_, _, err := client.RepositoryFiles.GetFile(projectID, ".ruby-version", &gitlab.GetFileOptions{Ref: gitlab.String("master")}, nil)
+						_, _, err := client.RepositoryFiles.GetFile(projectID, ".ruby-version", &gitlab.GetFileOptions{Ref: gitlab.String("main")}, nil)
 						if err != nil {
 							return fmt.Errorf("failed to get '.ruby-version' file from template project: %w", err)
 						}
@@ -264,14 +264,14 @@ max_file_size = 123
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckGitlabProjectExists("gitlab_project.template-name-custom", &received),
 					testAccCheckGitlabProjectDefaultBranch(&received, &testAccGitlabProjectExpectedAttributes{
-						DefaultBranch: "master",
+						DefaultBranch: "main",
 					}),
 					func(state *terraform.State) error {
 						client := testAccProvider.Meta().(*gitlab.Client)
 
 						projectID := state.RootModule().Resources["gitlab_project.template-name-custom"].Primary.ID
 
-						_, _, err := client.RepositoryFiles.GetFile(projectID, "Gemfile", &gitlab.GetFileOptions{Ref: gitlab.String("master")}, nil)
+						_, _, err := client.RepositoryFiles.GetFile(projectID, "Gemfile", &gitlab.GetFileOptions{Ref: gitlab.String("main")}, nil)
 						if err != nil {
 							return fmt.Errorf("failed to get 'Gemfile' file from template project: %w", err)
 						}
@@ -287,14 +287,14 @@ max_file_size = 123
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckGitlabProjectExists("gitlab_project.template-id", &received),
 					testAccCheckGitlabProjectDefaultBranch(&received, &testAccGitlabProjectExpectedAttributes{
-						DefaultBranch: "master",
+						DefaultBranch: "main",
 					}),
 					func(state *terraform.State) error {
 						client := testAccProvider.Meta().(*gitlab.Client)
 
 						projectID := state.RootModule().Resources["gitlab_project.template-id"].Primary.ID
 
-						_, _, err := client.RepositoryFiles.GetFile(projectID, "Rakefile", &gitlab.GetFileOptions{Ref: gitlab.String("master")}, nil)
+						_, _, err := client.RepositoryFiles.GetFile(projectID, "Rakefile", &gitlab.GetFileOptions{Ref: gitlab.String("main")}, nil)
 						if err != nil {
 							return fmt.Errorf("failed to get 'Rakefile' file from template project: %w", err)
 						}
@@ -325,7 +325,7 @@ func TestAccGitlabProject_initializeWithReadme(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckGitlabProjectExists("gitlab_project.foo", &project),
 					testAccCheckGitlabProjectDefaultBranch(&project, &testAccGitlabProjectExpectedAttributes{
-						DefaultBranch: "master",
+						DefaultBranch: "main",
 					}),
 				),
 			},
@@ -506,7 +506,7 @@ func TestAccGitlabProject_importURL(t *testing.T) {
 
 	// Add a file to the base project, for later verifying the import.
 	_, _, err = client.RepositoryFiles.CreateFile(baseProject.ID, "foo.txt", &gitlab.CreateFileOptions{
-		Branch:        gitlab.String("master"),
+		Branch:        gitlab.String("main"),
 		CommitMessage: gitlab.String("add file"),
 		Content:       gitlab.String(""),
 	})
@@ -526,7 +526,7 @@ func TestAccGitlabProject_importURL(t *testing.T) {
 					func(state *terraform.State) error {
 						projectID := state.RootModule().Resources["gitlab_project.imported"].Primary.ID
 
-						_, _, err := client.RepositoryFiles.GetFile(projectID, "foo.txt", &gitlab.GetFileOptions{Ref: gitlab.String("master")}, nil)
+						_, _, err := client.RepositoryFiles.GetFile(projectID, "foo.txt", &gitlab.GetFileOptions{Ref: gitlab.String("main")}, nil)
 						if err != nil {
 							return fmt.Errorf("failed to get file from imported project: %w", err)
 						}
@@ -590,7 +590,7 @@ func TestAccGitlabProject_importURLMirrored(t *testing.T) {
 
 	// Add a file to the base project, for later verifying the import.
 	_, _, err = client.RepositoryFiles.CreateFile(baseProject.ID, "foo.txt", &gitlab.CreateFileOptions{
-		Branch:        gitlab.String("master"),
+		Branch:        gitlab.String("main"),
 		CommitMessage: gitlab.String("add file"),
 		Content:       gitlab.String(""),
 	})
@@ -620,7 +620,7 @@ func TestAccGitlabProject_importURLMirrored(t *testing.T) {
 					func(state *terraform.State) error {
 						projectID := state.RootModule().Resources["gitlab_project.imported"].Primary.ID
 
-						_, _, err := client.RepositoryFiles.GetFile(projectID, "foo.txt", &gitlab.GetFileOptions{Ref: gitlab.String("master")}, nil)
+						_, _, err := client.RepositoryFiles.GetFile(projectID, "foo.txt", &gitlab.GetFileOptions{Ref: gitlab.String("main")}, nil)
 						if err != nil {
 							return fmt.Errorf("failed to get file from imported project: %w", err)
 						}
@@ -647,7 +647,7 @@ func TestAccGitlabProject_importURLMirrored(t *testing.T) {
 					func(state *terraform.State) error {
 						projectID := state.RootModule().Resources["gitlab_project.imported"].Primary.ID
 
-						_, _, err := client.RepositoryFiles.GetFile(projectID, "foo.txt", &gitlab.GetFileOptions{Ref: gitlab.String("master")}, nil)
+						_, _, err := client.RepositoryFiles.GetFile(projectID, "foo.txt", &gitlab.GetFileOptions{Ref: gitlab.String("main")}, nil)
 						if err != nil {
 							return fmt.Errorf("failed to get file from imported project: %w", err)
 						}
@@ -674,7 +674,7 @@ func TestAccGitlabProject_importURLMirrored(t *testing.T) {
 					func(state *terraform.State) error {
 						projectID := state.RootModule().Resources["gitlab_project.imported"].Primary.ID
 
-						_, _, err := client.RepositoryFiles.GetFile(projectID, "foo.txt", &gitlab.GetFileOptions{Ref: gitlab.String("master")}, nil)
+						_, _, err := client.RepositoryFiles.GetFile(projectID, "foo.txt", &gitlab.GetFileOptions{Ref: gitlab.String("main")}, nil)
 						if err != nil {
 							return fmt.Errorf("failed to get file from imported project: %w", err)
 						}
@@ -1015,7 +1015,7 @@ func testAccGitlabProjectConfigImportURL(rInt int, importURL string) string {
 	return fmt.Sprintf(`
 resource "gitlab_project" "imported" {
   name = "imported-%d"
-  default_branch = "master"
+  default_branch = "main"
   import_url = "%s"
 
   # So that acceptance tests can be run in a gitlab organization
@@ -1029,7 +1029,7 @@ func testAccGitlabProjectConfigImportURLMirror(rInt int, importURL string) strin
 	return fmt.Sprintf(`
 resource "gitlab_project" "imported" {
   name = "imported-%d"
-  default_branch = "master"
+  default_branch = "main"
   import_url = "%s"
   mirror = true
   mirror_trigger_builds = true
@@ -1047,7 +1047,7 @@ func testAccGitlabProjectConfigImportURLMirrorDisabledOptionals(rInt int, import
 	return fmt.Sprintf(`
 resource "gitlab_project" "imported" {
   name = "imported-%d"
-  default_branch = "master"
+  default_branch = "main"
   import_url = "%s"
   mirror = true
   mirror_trigger_builds = false
@@ -1065,7 +1065,7 @@ func testAccGitlabProjectConfigImportURLMirrorDisabled(rInt int, importURL strin
 	return fmt.Sprintf(`
 resource "gitlab_project" "imported" {
   name = "imported-%d"
-  default_branch = "master"
+  default_branch = "main"
   import_url = "%s"
   mirror = false
   mirror_trigger_builds = false
@@ -1085,7 +1085,7 @@ resource "gitlab_project" "foo" {
   name = "foo-%[1]d"
   path = "foo.%[1]d"
   description = "Terraform acceptance tests"
-  default_branch = "master"
+  default_branch = "main"
 
   push_rules {
 %[2]s
@@ -1104,7 +1104,7 @@ resource "gitlab_project" "template-name" {
   path = "template-name.%d"
   description = "Terraform acceptance tests"
   template_name = "rails"
-  default_branch = "master"
+  default_branch = "main"
 }
 	`, rInt, rInt)
 }
@@ -1123,7 +1123,7 @@ resource "gitlab_project" "template-name-custom" {
   description = "Terraform acceptance tests"
   template_name = "myrails"
   use_custom_template = true
-  default_branch = "master"
+  default_branch = "main"
 }
 	`, rInt, rInt)
 }
@@ -1136,7 +1136,7 @@ resource "gitlab_project" "template-id" {
   description = "Terraform acceptance tests"
   template_project_id = 999
   use_custom_template = true
-  default_branch = "master"
+  default_branch = "main"
 }
 	`, rInt, rInt)
 }
@@ -1150,7 +1150,7 @@ resource "gitlab_project" "template-mutual-exclusive" {
   template_name = "rails"
   template_project_id = 999
   use_custom_template = true
-  default_branch = "master"
+  default_branch = "main"
 }
 	`, rInt, rInt)
 }
